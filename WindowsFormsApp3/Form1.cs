@@ -44,8 +44,8 @@ namespace WindowsFormsApp3
                 guesses++;
 
                 /*decrease the value shown in the attemptsallowedbox*/
-                int decreaseattemptsCountBox = Convert.ToInt32(attemptsCount.Text) - 1;
-                attemptsCount.Text = decreaseattemptsCountBox.ToString();
+                //int decreaseattemptsCountBox = Convert.ToInt32(attemptsCount.Text) - 1;
+               // attemptsCount.Text = decreaseattemptsCountBox.ToString();
             }
             /*if we fail validation clear the box, dont incriment guesses or decrement the attempt box*/
             else
@@ -59,10 +59,12 @@ namespace WindowsFormsApp3
         public void getComparison(string inputVal, string guessVal, int guessCount)
         {
             /*definging variables*/
+            StringBuilder sb1 = new StringBuilder();
+            char[] crowsValues = guessBox.Text.ToCharArray();
+            char letter;
             bool isMatch = guessBox.Text.Equals(inputBox.Text);
             int maxGuesses = Convert.ToInt32(attemptsCount.Text);
-            int x = 0;
-            int y = 0;
+            int x = 0;          
            
             /*if match call winCondition method*/
             if (isMatch == true)
@@ -79,31 +81,34 @@ namespace WindowsFormsApp3
             {
                 /*check the strings at their particular index to see if bulls exist
                    if they do we will add them to the list box and label it with the attempt count*/
-                bullsListBox.Items.Add("Attemot: " + guessCount.ToString());
+                bullsListBox.Items.Add("Attempt: " + guessCount.ToString());
                 for(int i = 0; i < inputVal.Length; i++)
                 {
                     if(inputVal[i] == guessVal[i])
                     {
-                        bullsListBox.Items.Add(guessVal[i].ToString());
+                        sb1.Append(guessVal[i]);
                         x++;
                     }
                 }
 
+                bullsListBox.Items.Add(sb1);
+
                 /*compare each string in any order to find if any crows exist
                   if they do we will add them to the list box and label it with the attempt count*/
-                //need to add logic to check if its a duplicate to --y and not add it to the listbox.
                 crowsListBox.Items.Add("Attempt: " + guessCount.ToString());
                 for (int k = 0; k < inputVal.Length; k++)
                 {
                     for (int j = 0; j < guessVal.Length; j++)
                     {                        
                         if (inputVal[k].ToString() == guessVal[j].ToString())
-                        {                           
-                            crowsListBox.Items.Add(guessVal[j].ToString());
-                            y++;
+                        {                         
+                            letter = crowsValues[j];                                                       
                         }
                     }
                 }
+                removeDuplicates(crowsValues);
+
+
             }
 
           /*Check(s) if we need to populate any values in our total Bulls/Crows Boxes*/
@@ -112,13 +117,7 @@ namespace WindowsFormsApp3
                 bullsTotalCount.Text = x.ToString();
             }
             else
-                bullsTotalCount.Text = "No Bulls Yet.";
-            if (y > 0)
-            {
-                crowsTotalCount.Text = y.ToString();
-            }
-            else
-                crowsTotalCount.Text = "No Crows Yet.";
+                bullsTotalCount.Text = "No Bulls Yet.";          
         }
 
         /*Method for our win condition can either start over of exit*/
@@ -144,6 +143,56 @@ namespace WindowsFormsApp3
             }
         }
 
+        /*added validate method to insure the text inputs are the same length*/
+        public bool ValidateBoxes(string input, string output)
+        {
+            if (output.Length == input.Length)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /*method to remove duplicates and return values to the crows box 12/15/19*/
+
+        public void removeDuplicates(char[] _val)
+        {
+            /*declaring variables*/
+            StringBuilder sb = new StringBuilder();
+            int y = 0;
+            bool repeatedChar;
+            /*looping over the char[] passed in if the bool == true then we wont append to the new string*/
+            for (int i = 0; i < _val.Length; i++)
+            {
+                /*assume its not repeated*/
+                repeatedChar = false;
+
+                for (int j = i + 1; j < _val.Length; j++)
+                {
+                    if (_val[i] == _val[j])
+                    {
+                        repeatedChar = true;
+                        break;
+                    }
+                }
+                if (!repeatedChar)
+                {
+                    sb.Append(_val[i]);
+                }                
+            }
+
+            crowsListBox.Items.Add(sb);
+            y = sb.Length;
+
+            if (y > 0)
+            {
+                crowsTotalCount.Text = y.ToString();
+            }
+            else
+                crowsTotalCount.Text = "No Crows Yet.";
+
+        }
         /*Method for our lose condition can either start over of exit*/
         public void loseConditions()
         {
@@ -161,17 +210,6 @@ namespace WindowsFormsApp3
             {
                 Application.Exit();
             }
-        }
-
-        /*added validate method to insure the text inputs are the same length*/
-        public bool ValidateBoxes(string input, string output)
-        {
-            if (output.Length == input.Length)
-            {
-                return true;
-            }
-            else
-            return false;
         }
 
         /*send our form object to this method to intialze a new one*/
