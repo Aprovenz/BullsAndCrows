@@ -1,6 +1,2 @@
 A windows form based version of Bulls and Crows 
 https://en.wikipedia.org/wiki/Bulls_and_Cows
-
-Need to remove duplication issue for crow nested for loops to be fully complete.
-
-As long as no duplicate values are entered logic functions as expected.
